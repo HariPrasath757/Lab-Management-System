@@ -196,17 +196,23 @@ input[type="text"], input[type="number"], input[type="email"], input[type="passw
 
 .date-time-group {
     display: flex;
-    justify-content: space-between;
-    gap: 15px;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 20px;
 }
 
-.date-time-group input {
-    flex: 1;
-    padding: var(--padding);
-    border-radius: var(--border-radius);
-    border: 1px solid var(--accent-color);
-    background-color: var(--secondary-bg);
-    color: var(--text-color);
+.date-time-group label {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--accent-color);
+    margin-bottom: 5px;
+}
+
+.date-time-group v-date-picker,
+.date-time-group v-time-picker {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 10px;
 }
 
 /* Responsive Design */
@@ -248,7 +254,7 @@ input[type="text"], input[type="number"], input[type="email"], input[type="passw
 
 /* Additional CSS for Date-Time Picker */
 .v-date-time-widget-container {
-    background: white;
+    background: var(--secondary-bg); /* Match the overall color scheme */
     padding: 15px;
 }
 

@@ -234,13 +234,15 @@ const vm = new Vue({
   vuetify: new Vuetify(), // Initialize Vuetify
   data(){
     return {
-      dateModel: '',
-      timeModel: '',
+      fromDateModel: '',
+      fromTimeModel: '',
+      toDateModel: '',
+      toTimeModel: '',
     }
   },
   methods: {
     submitBooking() {
-      alert(`Slot booked for ${this.dateModel} at ${this.timeModel}`);
+      alert(`Slot booked from ${this.fromDateModel} ${this.fromTimeModel} to ${this.toDateModel} ${this.toTimeModel}`);
     }
   }
 });

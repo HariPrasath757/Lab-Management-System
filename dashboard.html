@@ -51,9 +51,17 @@
                         <v-container>
                             <v-layout column align-center>
                                 <v-flex>
-                                    <v-date-picker v-model="dateModel" label="Select Date"></v-date-picker>
-                                    <v-time-picker v-model="timeModel" label="Select Time"></v-time-picker>
-                                    <v-btn @click="submitBooking">Submit</v-btn>
+                                    <div class="date-time-group">
+                                        <label for="from-date">From:</label>
+                                        <v-date-picker v-model="fromDateModel" color="accent"></v-date-picker>
+                                        <v-time-picker v-model="fromTimeModel" color="accent"></v-time-picker>
+                                    </div>
+                                    <div class="date-time-group">
+                                        <label for="to-date">To:</label>
+                                        <v-date-picker v-model="toDateModel" color="accent"></v-date-picker>
+                                        <v-time-picker v-model="toTimeModel" color="accent"></v-time-picker>
+                                    </div>
+                                    <v-btn color="accent" @click="submitBooking">Submit</v-btn>
                                 </v-flex>
                             </v-layout>
                         </v-container>
