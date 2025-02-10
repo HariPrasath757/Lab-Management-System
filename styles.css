@@ -172,6 +172,14 @@ input[type="text"], input[type="number"], input[type="email"], input[type="passw
     gap: 30px;
 }
 
+/* Centered Form */
+.centered-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
 /* Slot Booking Section */
 #slot-booking {
     display: flex;
@@ -236,4 +244,69 @@ input[type="text"], input[type="number"], input[type="email"], input[type="passw
         flex-direction: column;
         gap: 10px;
     }
+}
+
+/* Additional CSS for Date-Time Picker */
+.v-date-time-widget-container {
+    background: white;
+    padding: 15px;
+}
+
+.v-card {
+    box-shadow: none;
+}
+
+.btn-am {
+    float: left;
+}
+
+.btn-pm {
+    float: right;
+}
+
+.v-date-picker-table {
+    height: auto;
+}
+
+.v-application--is-ltr .v-date-picker-table--date {
+    width: 100%;
+}
+
+.v-time-picker-clock__item--disabled {
+    display: none;
+}
+
+.v-application {
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+}
+
+/* Profile Section */
+#user-profile p {
+    margin: 10px 0;
+}
+
+/* Buttons Styling */
+button {
+    background-color: var(--accent-color);
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px;
+    border: none;
+    border-radius: var(--border-radius);
+}
+
+button:hover {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+}
+
+button:active {
+    background-color: var(--active-color);
+    transform: translateY(2px);
+}
+
+button:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
 }

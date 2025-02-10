@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IoT Lab Management - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Include Vuetify CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.5.10/dist/vuetify.min.css" rel="stylesheet">
 </head>
 <body>
     <div class="dashboard-container">
@@ -29,7 +30,7 @@
 
             <div id="component-request-tab" class="tab-content">
                 <h3>Lab Component Request</h3>
-                <form id="component-request-form">
+                <form id="component-request-form" class="centered-form">
                     <div id="component-inputs">
                         <div class="component-input">
                             <label for="component-name">Component Name:</label>
@@ -45,11 +46,19 @@
 
             <div id="slot-booking-tab" class="tab-content">
                 <h3>Slot Booking</h3>
-                <form id="slot-booking-form">
-                    <label for="slot-time">Select Time Slot:</label>
-                    <input type="time" id="slot-time" required>
-                    <button type="submit">Book Slot</button>
-                </form>
+                <div id="app">
+                    <v-app>
+                        <v-container>
+                            <v-layout column align-center>
+                                <v-flex>
+                                    <v-date-picker v-model="dateModel" label="Select Date"></v-date-picker>
+                                    <v-time-picker v-model="timeModel" label="Select Time"></v-time-picker>
+                                    <v-btn @click="submitBooking">Submit</v-btn>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
+                    </v-app>
+                </div>
             </div>
 
             <div id="profile-tab" class="tab-content">
@@ -60,6 +69,8 @@
             </div>
         </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.5.10/dist/vuetify.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
