@@ -1,0 +1,239 @@
+/* Root Variables for Reusability */
+:root {
+    --dark-bg: #121212;
+    --secondary-bg: #1f1f1f;
+    --accent-color: #27ae60;
+    --text-color: white;
+    --hover-color: #2ecc71;
+    --active-color: #1e8e50;
+    --padding: 12px;
+    --border-radius: 5px;
+    --shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* General Body Style */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+}
+
+/* Global Transition for Smooth Animations */
+* {
+    transition: all 0.3s ease-in-out;
+}
+
+/* Container for Center Alignment */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Form Wrapper for Rectangle Box */
+.form-wrapper {
+    background-color: var(--secondary-bg);
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    width: 400px;
+    text-align: center;
+}
+
+.form-wrapper h1 {
+    font-size: 28px;
+    color: var(--accent-color);
+    margin-bottom: 30px;
+}
+
+#form-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#form-container form input, #form-container button {
+    padding: var(--padding);
+    font-size: 16px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--accent-color);
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+}
+
+/* Buttons Styling */
+button {
+    background-color: var(--accent-color);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: var(--hover-color);
+    transform: translateY(-2px);
+}
+
+button:active {
+    background-color: var(--active-color);
+    transform: translateY(2px);
+}
+
+button:focus {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 220px;
+    background-color: var(--secondary-bg);
+    padding: 25px;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    overflow-y: auto;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+}
+
+.sidebar ul li a {
+    color: var(--accent-color);
+    padding: var(--padding) 20px;
+    text-decoration: none;
+    display: block;
+    font-size: 18px;
+    border-bottom: 1px solid var(--accent-color);
+}
+
+.sidebar ul li a:hover, .sidebar ul li a.active {
+    background-color: var(--accent-color);
+    color: black;
+}
+
+/* Content Section */
+.content {
+    margin-left: 260px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    overflow-x: auto;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Styling for Specific Sections */
+input[type="text"], input[type="number"], input[type="email"], input[type="password"], select {
+    padding: var(--padding);
+    font-size: 16px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--accent-color);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+}
+
+/* "Add Another Component" and "Request" Buttons Inline */
+.add-request-wrapper {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 30px; /* Add space above buttons */
+    padding: 10px 0;
+}
+
+.add-request-wrapper button {
+    padding: 16px; /* Make buttons larger */
+    font-size: 16px;
+    border-radius: 6px; /* Slightly larger border radius */
+    flex: 1; /* Ensure buttons are balanced in size */
+}
+
+/* Spacing Between Multiple Components in "Add Components" */
+.add-components {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+/* Slot Booking Section */
+#slot-booking {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 40px; /* Add spacing between sections */
+}
+
+.time-slot-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.date-time-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.date-time-group input {
+    flex: 1;
+    padding: var(--padding);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--accent-color);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+    }
+
+    .content {
+        margin-left: 220px;
+    }
+
+    #form-container {
+        width: 100%;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        width: 180px;
+        font-size: 14px;
+    }
+
+    .content {
+        margin-left: 200px;
+        padding: 20px;
+    }
+
+    #form-container {
+        padding: 15px;
+    }
+
+    .add-request-wrapper {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

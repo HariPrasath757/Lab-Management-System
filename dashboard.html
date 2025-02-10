@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Lab Management - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <ul>
+                <li><a href="#" class="tab-link active" data-tab="home-tab">Home</a></li>
+                <li><a href="#" class="tab-link" data-tab="component-request-tab">Lab Component Request</a></li>
+                <li><a href="#" class="tab-link" data-tab="slot-booking-tab">Slot Booking</a></li>
+                <li><a href="#" class="tab-link" data-tab="profile-tab">Profile</a></li>
+                <li><a href="#" id="logout">Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content">
+            <div id="home-tab" class="tab-content active">
+                <h3>Welcome to the IoT Lab Dashboard</h3>
+                <p>Select an option from the sidebar to get started.</p>
+            </div>
+
+            <div id="component-request-tab" class="tab-content">
+                <h3>Lab Component Request</h3>
+                <form id="component-request-form">
+                    <div id="component-inputs">
+                        <div class="component-input">
+                            <label for="component-name">Component Name:</label>
+                            <input type="text" name="component-name[]" required placeholder="Enter Component Name">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" name="quantity[]" required placeholder="Enter Quantity">
+                        </div>
+                    </div>
+                    <button type="button" id="add-component">Add Another Component</button>
+                    <button type="submit">Request</button>
+                </form>
+            </div>
+
+            <div id="slot-booking-tab" class="tab-content">
+                <h3>Slot Booking</h3>
+                <form id="slot-booking-form">
+                    <label for="slot-time">Select Time Slot:</label>
+                    <input type="time" id="slot-time" required>
+                    <button type="submit">Book Slot</button>
+                </form>
+            </div>
+
+            <div id="profile-tab" class="tab-content">
+                <h3>Your Profile</h3>
+                <div id="user-profile">
+                    <!-- Profile details will be dynamically inserted here -->
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
