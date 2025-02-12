@@ -57,6 +57,11 @@
         #register-form input {
             margin-bottom: 10px;
         }
+
+        /* Ensure login input fields match the button width */
+        #login-form input[type="text"], #login-form input[type="password"] {
+            width: calc(100% - 22px); /* adjust width to match button */
+        }
     </style>
 </head>
 <body>
@@ -118,26 +123,36 @@
         });
 
         // Handle login functionality
-        document.getElementById('login-form').addEventListener('submit', function(event) {
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
             event.preventDefault();
 
             const username = document.getElementById('login-username').value;
             const password = document.getElementById('login-password').value;
 
-            const users = JSON.parse(localStorage.getItem('users')) || [];
-            const user = users.find(u => u.username === username && u.password === password);
+            try {
+                const response = await fetch('http://localhost:5000/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
 
-            if (user) {
-                // Store user data in sessionStorage for the profile tab
-                sessionStorage.setItem('currentUser', JSON.stringify(user));
-                window.location.href = "dashboard.html"; // Redirect to dashboard
-            } else {
-                document.getElementById('login-error').textContent = 'Invalid username or password.';
+                if (response.ok) {
+                    const user = await response.json();
+                    sessionStorage.setItem('currentUser', JSON.stringify(user));
+                    window.location.href = "dashboard.html"; // Redirect to dashboard
+                } else {
+                    const errorText = await response.text();
+                    document.getElementById('login-error').textContent = errorText;
+                }
+            } catch (error) {
+                document.getElementById('login-error').textContent = 'An error occurred. Please try again.';
             }
         });
 
         // Handle registration functionality
-        document.getElementById('register-form').addEventListener('submit', function(event) {
+        document.getElementById('register-form').addEventListener('submit', async function(event) {
             event.preventDefault();
 
             const name = document.getElementById('register-name').value;
@@ -148,14 +163,6 @@
             const dob = document.getElementById('register-dob').value;
             const course = document.getElementById('register-course').value;
             const graduationYear = document.getElementById('register-graduation-year').value;
-
-            let users = JSON.parse(localStorage.getItem('users')) || [];
-
-            const existingUser = users.find(u => u.username === username);
-            if (existingUser) {
-                document.getElementById('register-error').textContent = 'Username already exists';
-                return;
-            }
 
             const newUser = {
                 name,
@@ -168,14 +175,28 @@
                 graduationYear
             };
 
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
+            try {
+                const response = await fetch('http://localhost:5000/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(newUser)
+                });
 
-            alert('Registration successful!');
-            document.getElementById('register-form').reset();
-            document.getElementById('register-form').style.display = 'none';
-            document.getElementById('login-form').style.display = 'block';
-            document.getElementById('register-error').textContent = '';
+                if (response.ok) {
+                    alert('Registration successful!');
+                    document.getElementById('register-form').reset();
+                    document.getElementById('register-form').style.display = 'none';
+                    document.getElementById('login-form').style.display = 'block';
+                    document.getElementById('register-error').textContent = '';
+                } else {
+                    const errorText = await response.text();
+                    document.getElementById('register-error').textContent = errorText;
+                }
+            } catch (error) {
+                document.getElementById('register-error').textContent = 'An error occurred. Please try again.';
+            }
         });
     </script>
 </body>
