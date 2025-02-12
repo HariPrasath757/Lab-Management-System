@@ -82,7 +82,7 @@ button:active {
 }
 
 button:focus {
-    outline: 2px solid var(--accent-color);
+    outline: 2px solid var (--accent-color);
     outline-offset: 2px;
 }
 
@@ -208,13 +208,6 @@ input[type="text"], input[type="number"], input[type="email"], input[type="passw
     margin-bottom: 5px;
 }
 
-.date-time-group v-date-picker,
-.date-time-group v-time-picker {
-    width: 100%;
-    max-width: 300px;
-    margin-bottom: 10px;
-}
-
 /* Responsive Design */
 @media (max-width: 768px) {
     .sidebar {
@@ -250,41 +243,6 @@ input[type="text"], input[type="number"], input[type="email"], input[type="passw
         flex-direction: column;
         gap: 10px;
     }
-}
-
-/* Additional CSS for Date-Time Picker */
-.v-date-time-widget-container {
-    background: var(--secondary-bg); /* Match the overall color scheme */
-    padding: 15px;
-}
-
-.v-card {
-    box-shadow: none;
-}
-
-.btn-am {
-    float: left;
-}
-
-.btn-pm {
-    float: right;
-}
-
-.v-date-picker-table {
-    height: auto;
-}
-
-.v-application--is-ltr .v-date-picker-table--date {
-    width: 100%;
-}
-
-.v-time-picker-clock__item--disabled {
-    display: none;
-}
-
-.v-application {
-    background-color: var(--dark-bg);
-    color: var(--text-color);
 }
 
 /* Profile Section */
