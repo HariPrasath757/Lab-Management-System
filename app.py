@@ -50,5 +50,37 @@ def login():
     else:
         return jsonify({'message': 'Invalid username or password.'}), 400
 
+@app.route('/component-request', methods=['POST'])
+def component_request():
+    data = request.get_json()
+    username = data['username']
+    components = data['components']
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    for component in components:
+        cursor.execute('INSERT INTO component_requests (username, component_name, quantity) VALUES (%s, %s, %s)', 
+                       (username, component['componentName'], component['quantity']))
+    mysql.connection.commit()
+    cursor.close()
+
+    return jsonify({'message': 'Component request submitted successfully!'}), 201
+
+@app.route('/slot-booking', methods=['POST'])
+def slot_booking():
+    data = request.get_json()
+    username = data['username']
+    from_date = data['fromDate']
+    from_time = data['fromTime']
+    to_date = data['toDate']
+    to_time = data['toTime']
+
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('INSERT INTO slot_bookings (username, from_date, from_time, to_date, to_time) VALUES (%s, %s, %s, %s, %s)', 
+                   (username, from_date, from_time, to_date, to_time))
+    mysql.connection.commit()
+    cursor.close()
+
+    return jsonify({'message': 'Slot booking submitted successfully!'}), 201
+
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

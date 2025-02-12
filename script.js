@@ -20,8 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle Component Request Form Submission
     const componentRequestForm = document.getElementById('component-request-form');
     if (componentRequestForm) {
-        componentRequestForm.addEventListener('submit', (e) => {
+        componentRequestForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            const username = currentUser.username;
 
             const componentNames = document.querySelectorAll('input[name="component-name[]"]');
             const quantities = document.querySelectorAll('input[name="quantity[]"]');
@@ -39,7 +42,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            alert('Components Requested: ' + JSON.stringify(components, null, 2));
+            try {
+                const response = await fetch('http://localhost:5000/component-request', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, components })
+                });
+
+                if (response.ok) {
+                    alert('Component request submitted successfully!');
+                    componentRequestForm.reset();
+                } else {
+                    alert('Failed to submit component request.');
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+            }
         });
     }
 
@@ -90,15 +110,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle Slot Booking Form Submission
     const slotBookingForm = document.getElementById('slot-booking-form');
     if (slotBookingForm) {
-        slotBookingForm.addEventListener('submit', (e) => {
+        slotBookingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            const username = currentUser.username;
 
             const fromDate = document.getElementById('from-date').value;
             const fromTime = document.getElementById('from-time').value;
             const toDate = document.getElementById('to-date').value;
             const toTime = document.getElementById('to-time').value;
 
-            alert(`Slot booked from ${fromDate} ${fromTime} to ${toDate} ${toTime}`);
+            try {
+                const response = await fetch('http://localhost:5000/slot-booking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, fromDate, fromTime, toDate, toTime })
+                });
+
+                if (response.ok) {
+                    alert(`Slot booked from ${fromDate} ${fromTime} to ${toDate} ${toTime}`);
+                    slotBookingForm.reset();
+                } else {
+                    alert('Failed to book slot.');
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+            }
         });
     }
 });
