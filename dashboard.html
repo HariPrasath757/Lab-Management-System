@@ -12,9 +12,9 @@
         <aside class="sidebar">
             <ul>
                 <li><a href="#" class="tab-link active" data-tab="home-tab">Home</a></li>
-                <li><a href="#" class="tab-link" data-tab="component-request-tab">Lab Component Request</a></li>
-                <li><a href="#" class="tab-link" data-tab="slot-booking-tab">Slot Booking</a></li>
-                <li><a href="#" class="tab-link" data-tab="profile-tab">Profile</a></li>
+                <li class="student-only"><a href="#" class="tab-link" data-tab="component-request-tab">Lab Component Request</a></li>
+                <li class="student-only"><a href="#" class="tab-link" data-tab="slot-booking-tab">Slot Booking</a></li>
+                <li class="student-only"><a href="#" class="tab-link" data-tab="profile-tab">Profile</a></li>
                 <li id="lab-incharge-section" style="display: none;">
                     <a href="#" class="tab-link" data-tab="view-requests-tab">View Requests</a>
                     <a href="#" class="tab-link" data-tab="view-components-tab">View Components</a>
@@ -30,7 +30,7 @@
                 <p>Select an option from the sidebar to get started.</p>
             </div>
 
-            <div id="component-request-tab" class="tab-content">
+            <div id="component-request-tab" class="tab-content student-only">
                 <h3>Lab Component Request</h3>
                 <form id="component-request-form" class="centered-form">
                     <div id="component-inputs" class="component-inputs">
@@ -53,7 +53,7 @@
                 </form>
             </div>
 
-            <div id="slot-booking-tab" class="tab-content">
+            <div id="slot-booking-tab" class="tab-content student-only">
                 <h3>Slot Booking</h3>
                 <form id="slot-booking-form" class="centered-form">
                     <div class="date-time-group">
@@ -72,7 +72,7 @@
                 </form>
             </div>
 
-            <div id="profile-tab" class="tab-content">
+            <div id="profile-tab" class="tab-content student-only">
                 <h3>Your Profile</h3>
                 <div id="user-profile">
                     <!-- Profile details will be dynamically inserted here -->

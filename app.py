@@ -17,18 +17,11 @@ mysql = MySQL(app)
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    name = data['name']
-    username = data['username']
-    password = data['password']
-    roll = data['roll']
-    gender = data['gender']
-    dob = data['dob']
-    course = data['course']
-    graduation_year = data['graduationYear']
+    keys = ['name', 'username', 'password', 'roll', 'gender', 'dob', 'course', 'graduationYear']
+    values = [data[key] for key in keys]
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('INSERT INTO users (name, username, password, roll, gender, dob, course, graduation_year) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', 
-                   (name, username, password, roll, gender, dob, course, graduation_year))
+    cursor.execute('INSERT INTO users (name, username, password, roll, gender, dob, course, graduation_year) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', values)
     mysql.connection.commit()
     cursor.close()
 
@@ -37,18 +30,24 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
+    login_type = data['loginType']
     username = data['username']
     password = data['password']
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
-    user = cursor.fetchone()
+    if login_type == 'student':
+        cursor.execute('SELECT * FROM users WHERE username = %s AND password = %s', (username, password))
+        user = cursor.fetchone()
+    elif login_type == 'lab_incharge' and username == 'amrita' and password == '1234':
+        user = {'username': 'amrita', 'role': 'lab_incharge'}
+    else:
+        user = None
+
     cursor.close()
 
     if user:
         return jsonify(user), 200
-    else:
-        return jsonify({'message': 'Invalid username or password.'}), 400
+    return jsonify({'message': 'Invalid username or password.'}), 400
 
 @app.route('/component-request', methods=['POST'])
 def component_request():
@@ -58,44 +57,45 @@ def component_request():
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     for component in components:
-        component_name = component['componentName']
-        quantity_requested = component['quantity']
-
-        # Check available quantity
-        cursor.execute('SELECT quantity_available FROM available_components WHERE component_name = %s', (component_name,))
+        cursor.execute('SELECT quantity_available FROM available_components WHERE component_name = %s', (component['componentName'],))
         result = cursor.fetchone()
-        
-        if result and result['quantity_available'] >= quantity_requested:
-            # Decrease quantity in available_components table
+        if result and int(result['quantity_available']) >= int(component['quantity']):
             cursor.execute('UPDATE available_components SET quantity_available = quantity_available - %s WHERE component_name = %s', 
-                           (quantity_requested, component_name))
-            # Insert into component_requests table
+                           (int(component['quantity']), component['componentName']))
             cursor.execute('INSERT INTO component_requests (username, component_name, quantity) VALUES (%s, %s, %s)', 
-                           (username, component_name, quantity_requested))
+                           (username, component['componentName'], int(component['quantity'])))
         else:
             cursor.close()
-            return jsonify({'message': f'Not enough {component_name} available.'}), 400
+            return jsonify({'message': f'Not enough {component["componentName"]} available.'}), 400
 
     mysql.connection.commit()
     cursor.close()
-
     return jsonify({'message': 'Component request submitted successfully!'}), 201
+
+@app.route('/component-requests', methods=['GET'])
+def get_component_requests():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT username, component_name, quantity FROM component_requests')
+    requests = cursor.fetchall()
+    cursor.close()
+    return jsonify(requests)
+
+@app.route('/available-components', methods=['GET'])
+def get_available_components():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT component_name, category, quantity_available FROM available_components')
+    components = cursor.fetchall()
+    cursor.close()
+    return jsonify(components)
 
 @app.route('/slot-booking', methods=['POST'])
 def slot_booking():
     data = request.get_json()
-    username = data['username']
-    from_date = data['fromDate']
-    from_time = data['fromTime']
-    to_date = data['toDate']
-    to_time = data['toTime']
-
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     cursor.execute('INSERT INTO slot_bookings (username, from_date, from_time, to_date, to_time) VALUES (%s, %s, %s, %s, %s)', 
-                   (username, from_date, from_time, to_date, to_time))
+                   (data['username'], data['fromDate'], data['fromTime'], data['toDate'], data['toTime']))
     mysql.connection.commit()
     cursor.close()
-
     return jsonify({'message': 'Slot booking submitted successfully!'}), 201
 
 @app.route('/get-components', methods=['GET'])

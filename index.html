@@ -69,8 +69,14 @@
         <div class="form-wrapper">
             <h1>IoT Lab Management</h1>
             <div id="form-container">
+                <!-- Initial Login Type Selection -->
+                <div id="login-type-selection">
+                    <button id="student-login-button">Student Login</button>
+                    <button id="lab-incharge-login-button">Lab In-charge Login</button>
+                </div>
+
                 <!-- Login Form -->
-                <form id="login-form">
+                <form id="login-form" style="display: none;">
                     <h2>Login</h2>
                     <input type="text" id="login-username" placeholder="Username" required>
                     <input type="password" id="login-password" placeholder="Password" required>
@@ -107,6 +113,21 @@
     </div>
 
     <script>
+        let loginType = '';
+
+        // Handle login type selection
+        document.getElementById('student-login-button').addEventListener('click', function() {
+            loginType = 'student';
+            document.getElementById('login-type-selection').style.display = 'none';
+            document.getElementById('login-form').style.display = 'flex';
+        });
+
+        document.getElementById('lab-incharge-login-button').addEventListener('click', function() {
+            loginType = 'lab_incharge';
+            document.getElementById('login-type-selection').style.display = 'none';
+            document.getElementById('login-form').style.display = 'flex';
+        });
+
         // Toggle between login and register forms
         document.getElementById('show-register').addEventListener('click', function(event) {
             event.preventDefault();
@@ -135,7 +156,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ loginType, username, password })
                 });
 
                 if (response.ok) {
