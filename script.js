@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Add Component Input Functionality
     const addComponentButton = document.getElementById('add-component');
     const componentInputsContainer = document.getElementById('component-inputs');
@@ -8,12 +8,68 @@ document.addEventListener('DOMContentLoaded', () => {
             const newComponentInput = document.createElement('div');
             newComponentInput.classList.add('component-input');
             newComponentInput.innerHTML = `
-                <label for="component-name">Component Name:</label>
-                <input type="text" name="component-name[]" required placeholder="Enter Component Name">
-                <label for="quantity">Quantity:</label>
-                <input type="number" name="quantity[]" required placeholder="Enter Quantity">
+                <div>
+                    <label for="component-name">Component Name:</label>
+                    <div class="custom-dropdown">
+                        <input type="text" name="component-name[]" placeholder="Search for a component" required>
+                        <div class="dropdown-list"></div>
+                    </div>
+                </div>
+                <div>
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" name="quantity[]" required placeholder="Enter Quantity">
+                </div>
             `;
             componentInputsContainer.appendChild(newComponentInput);
+            initializeDropdown(newComponentInput.querySelector('input[name="component-name[]"]'));
+        });
+    }
+
+    // Initialize dropdown for the first component input
+    initializeDropdown(document.querySelector('input[name="component-name[]"]'));
+
+    async function fetchComponents() {
+        try {
+            const response = await fetch('http://localhost:5000/get-components');
+            const components = await response.json();
+            return components.map(component => component.component_name);
+        } catch (error) {
+            console.error('Error fetching components:', error);
+            return [];
+        }
+    }
+
+    async function initializeDropdown(inputElement) {
+        const dropdownList = inputElement.nextElementSibling;
+        const components = await fetchComponents();
+
+        inputElement.addEventListener('input', () => {
+            const query = inputElement.value.toLowerCase();
+            dropdownList.innerHTML = '';
+
+            const filteredComponents = components.filter(component => component.toLowerCase().includes(query));
+            filteredComponents.forEach(component => {
+                const item = document.createElement('div');
+                item.classList.add('dropdown-item');
+                item.textContent = component;
+                item.addEventListener('click', () => {
+                    inputElement.value = component;
+                    dropdownList.innerHTML = '';
+                });
+                dropdownList.appendChild(item);
+            });
+        });
+
+        inputElement.addEventListener('focus', () => {
+            if (inputElement.value) {
+                inputElement.dispatchEvent(new Event('input'));
+            }
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!inputElement.parentElement.contains(event.target)) {
+                dropdownList.innerHTML = '';
+            }
         });
     }
 
@@ -55,7 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('Component request submitted successfully!');
                     componentRequestForm.reset();
                 } else {
-                    alert('Failed to submit component request.');
+                    const errorData = await response.json();
+                    alert(errorData.message);
                 }
             } catch (error) {
                 alert('An error occurred. Please try again.');

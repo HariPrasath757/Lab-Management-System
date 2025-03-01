@@ -58,8 +58,24 @@ def component_request():
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     for component in components:
-        cursor.execute('INSERT INTO component_requests (username, component_name, quantity) VALUES (%s, %s, %s)', 
-                       (username, component['componentName'], component['quantity']))
+        component_name = component['componentName']
+        quantity_requested = component['quantity']
+
+        # Check available quantity
+        cursor.execute('SELECT quantity_available FROM available_components WHERE component_name = %s', (component_name,))
+        result = cursor.fetchone()
+        
+        if result and result['quantity_available'] >= quantity_requested:
+            # Decrease quantity in available_components table
+            cursor.execute('UPDATE available_components SET quantity_available = quantity_available - %s WHERE component_name = %s', 
+                           (quantity_requested, component_name))
+            # Insert into component_requests table
+            cursor.execute('INSERT INTO component_requests (username, component_name, quantity) VALUES (%s, %s, %s)', 
+                           (username, component_name, quantity_requested))
+        else:
+            cursor.close()
+            return jsonify({'message': f'Not enough {component_name} available.'}), 400
+
     mysql.connection.commit()
     cursor.close()
 
@@ -81,6 +97,14 @@ def slot_booking():
     cursor.close()
 
     return jsonify({'message': 'Slot booking submitted successfully!'}), 201
+
+@app.route('/get-components', methods=['GET'])
+def get_components():
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT component_name FROM available_components')
+    components = cursor.fetchall()
+    cursor.close()
+    return jsonify(components)
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

@@ -82,7 +82,7 @@ button:active {
 }
 
 button:focus {
-    outline: 2px solid var (--accent-color);
+    outline: 2px solid var(--accent-color);
     outline-offset: 2px;
 }
 
@@ -169,7 +169,7 @@ input[type="text"], input[type="number"], input[type="email"], input[type="passw
 .add-components {
     display: flex;
     flex-direction: column;
-    gap: 30px;
+    gap: 20px;
 }
 
 /* Centered Form */
@@ -273,4 +273,56 @@ button:active {
 button:focus {
     outline: 2px solid var(--accent-color);
     outline-offset: 2px;
+}
+
+/* Custom Dropdown Styling */
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.custom-dropdown input {
+    width: 100%;
+    padding: var(--padding);
+    font-size: 16px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--accent-color);
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+}
+
+.dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: var(--secondary-bg);
+    border: 1px solid var(--accent-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    z-index: 1000;
+}
+
+.dropdown-item {
+    padding: var(--padding);
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: var(--hover-color);
+    color: black;
+}
+
+/* Component Input Styling */
+.component-input {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px; /* Add space between components */
+}
+
+.component-input > div {
+    display: flex;
+    flex-direction: column;
 }

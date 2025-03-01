@@ -15,6 +15,10 @@
                 <li><a href="#" class="tab-link" data-tab="component-request-tab">Lab Component Request</a></li>
                 <li><a href="#" class="tab-link" data-tab="slot-booking-tab">Slot Booking</a></li>
                 <li><a href="#" class="tab-link" data-tab="profile-tab">Profile</a></li>
+                <li id="lab-incharge-section" style="display: none;">
+                    <a href="#" class="tab-link" data-tab="view-requests-tab">View Requests</a>
+                    <a href="#" class="tab-link" data-tab="view-components-tab">View Components</a>
+                </li>
                 <li><a href="#" id="logout">Logout</a></li>
             </ul>
         </aside>
@@ -29,12 +33,19 @@
             <div id="component-request-tab" class="tab-content">
                 <h3>Lab Component Request</h3>
                 <form id="component-request-form" class="centered-form">
-                    <div id="component-inputs">
+                    <div id="component-inputs" class="component-inputs">
                         <div class="component-input">
-                            <label for="component-name">Component Name:</label>
-                            <input type="text" name="component-name[]" required placeholder="Enter Component Name">
-                            <label for="quantity">Quantity:</label>
-                            <input type="number" name="quantity[]" required placeholder="Enter Quantity">
+                            <div>
+                                <label for="component-name">Component Name:</label>
+                                <div class="custom-dropdown">
+                                    <input type="text" id="component-name" name="component-name[]" placeholder="Search for a component" required>
+                                    <div class="dropdown-list"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" name="quantity[]" required placeholder="Enter Quantity">
+                            </div>
                         </div>
                     </div>
                     <button type="button" id="add-component">Add Another Component</button>
@@ -66,6 +77,39 @@
                 <div id="user-profile">
                     <!-- Profile details will be dynamically inserted here -->
                 </div>
+            </div>
+
+            <div id="view-requests-tab" class="tab-content">
+                <h3>View Requests</h3>
+                <table id="requests-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Component Name</th>
+                            <th>Quantity</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Requests will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="view-components-tab" class="tab-content">
+                <h3>View Available Components</h3>
+                <table id="components-table">
+                    <thead>
+                        <tr>
+                            <th>Component Name</th>
+                            <th>Category</th>
+                            <th>Quantity Available</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Components will be dynamically inserted here -->
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
