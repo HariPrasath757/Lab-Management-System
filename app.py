@@ -57,17 +57,8 @@ def component_request():
 
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
     for component in components:
-        cursor.execute('SELECT quantity_available FROM available_components WHERE component_name = %s', (component['componentName'],))
-        result = cursor.fetchone()
-        if result and int(result['quantity_available']) >= int(component['quantity']):
-            cursor.execute('UPDATE available_components SET quantity_available = quantity_available - %s WHERE component_name = %s', 
-                           (int(component['quantity']), component['componentName']))
-            cursor.execute('INSERT INTO component_requests (username, component_name, quantity) VALUES (%s, %s, %s)', 
-                           (username, component['componentName'], int(component['quantity'])))
-        else:
-            cursor.close()
-            return jsonify({'message': f'Not enough {component["componentName"]} available.'}), 400
-
+        cursor.execute('INSERT INTO component_requests (username, component_name, quantity) VALUES (%s, %s, %s)', 
+                       (username, component['componentName'], int(component['quantity'])))
     mysql.connection.commit()
     cursor.close()
     return jsonify({'message': 'Component request submitted successfully!'}), 201
@@ -75,7 +66,7 @@ def component_request():
 @app.route('/component-requests', methods=['GET'])
 def get_component_requests():
     cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-    cursor.execute('SELECT username, component_name, quantity FROM component_requests')
+    cursor.execute('SELECT id, username, component_name, quantity FROM component_requests')
     requests = cursor.fetchall()
     cursor.close()
     return jsonify(requests)
@@ -105,6 +96,41 @@ def get_components():
     components = cursor.fetchall()
     cursor.close()
     return jsonify(components)
+
+@app.route('/approve-request/<int:request_id>', methods=['POST'])
+def approve_request(request_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('SELECT component_name, quantity FROM component_requests WHERE id = %s', (request_id,))
+    request = cursor.fetchone()
+
+    if not request:
+        cursor.close()
+        return jsonify({'message': 'Request not found'}), 404
+
+    component_name = request['component_name']
+    quantity = request['quantity']
+
+    cursor.execute('SELECT quantity_available FROM available_components WHERE component_name = %s', (component_name,))
+    result = cursor.fetchone()
+
+    if not result or int(result['quantity_available']) < int(quantity):
+        cursor.close()
+        return jsonify({'message': f'Not enough {component_name} available.'}), 400
+
+    cursor.execute('UPDATE available_components SET quantity_available = quantity_available - %s WHERE component_name = %s', 
+                   (int(quantity), component_name))
+    cursor.execute('DELETE FROM component_requests WHERE id = %s', (request_id,))
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': 'Request approved successfully!'}), 200
+
+@app.route('/decline-request/<int:request_id>', methods=['DELETE'])
+def decline_request(request_id):
+    cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+    cursor.execute('DELETE FROM component_requests WHERE id = %s', (request_id,))
+    mysql.connection.commit()
+    cursor.close()
+    return jsonify({'message': 'Request declined successfully!'}), 200
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)

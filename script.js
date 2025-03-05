@@ -183,9 +183,50 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td>${request.username}</td>
                     <td>${request.component_name}</td>
                     <td>${request.quantity}</td>
-                    <td><button class="approve-btn">Approve</button></td>
+                    <td>
+                        <button class="approve-btn" data-id="${request.id}">Approve</button>
+                        <button class="decline-btn" data-id="${request.id}">Decline</button>
+                    </td>
                 `;
                 requestsTableBody.appendChild(row);
+            });
+
+            document.querySelectorAll('.approve-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const requestId = button.getAttribute('data-id');
+                    try {
+                        const response = await fetch(`http://localhost:5000/approve-request/${requestId}`, {
+                            method: 'POST'
+                        });
+                        if (response.ok) {
+                            alert('Request approved successfully!');
+                            loadComponentRequests();
+                        } else {
+                            alert('Failed to approve request.');
+                        }
+                    } catch (error) {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.decline-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const requestId = button.getAttribute('data-id');
+                    try {
+                        const response = await fetch(`http://localhost:5000/decline-request/${requestId}`, {
+                            method: 'DELETE'
+                        });
+                        if (response.ok) {
+                            alert('Request declined successfully!');
+                            loadComponentRequests();
+                        } else {
+                            alert('Failed to decline request.');
+                        }
+                    } catch (error) {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
             });
         } catch (error) {
             console.error('Error loading component requests:', error);
