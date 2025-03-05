@@ -7,11 +7,11 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# MySQL configurations
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Hari@2006'
-app.config['MYSQL_DB'] = 'lab_management'
+# MySQL configurations (use environment variables in production)
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Hari@2006')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'lab_management')
 
 mysql = MySQL(app)
 
@@ -142,4 +142,4 @@ def decline_request(request_id):
     return jsonify({'message': 'Request declined successfully!'}), 200
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
