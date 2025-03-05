@@ -1,0 +1,8 @@
+# Ignore the .env file
+.env
+
+# Other files and directories to ignore
+__pycache__/
+*.pyc
+instance/
+.webassets-cache

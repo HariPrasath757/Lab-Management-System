@@ -3,15 +3,18 @@ from flask_mysqldb import MySQL
 from flask_cors import CORS
 import MySQLdb.cursors
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-# MySQL configurations (use environment variables in production)
-app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST', 'localhost')
-app.config['MYSQL_USER'] = os.getenv('MYSQL_USER', 'root')
-app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD', 'Hari@2006')
-app.config['MYSQL_DB'] = os.getenv('MYSQL_DB', 'lab_management')
+# MySQL configurations
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
 
 mysql = MySQL(app)
 
@@ -140,6 +143,14 @@ def decline_request(request_id):
     mysql.connection.commit()
     cursor.close()
     return jsonify({'message': 'Request declined successfully!'}), 200
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({'message': 'Resource not found'}), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({'message': 'Internal server error'}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
