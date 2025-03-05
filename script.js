@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <p><strong>Gender:</strong> ${currentUser.gender || 'Not Available'}</p>
             <p><strong>Date of Birth:</strong> ${currentUser.dob || 'Not Available'}</p>
             <p><strong>Course:</strong> ${currentUser.course || 'Not Available'}</p>
-            <p><strong>Graduation Year:</strong> ${currentUser.graduationYear || 'Not Available'}</p>
+            <p><strong>Graduation Year:</strong> ${currentUser.graduation_year || 'Not Available'}</p>
         `;
     } else if (userProfileContainer) {
         userProfileContainer.innerHTML = '<p>No user information available. Please log in again.</p>';
