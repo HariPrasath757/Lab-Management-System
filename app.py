@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_mysqldb import MySQL
 from flask_cors import CORS
 import MySQLdb.cursors
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -13,6 +14,14 @@ app.config['MYSQL_PASSWORD'] = 'Hari@2006'
 app.config['MYSQL_DB'] = 'lab_management'
 
 mysql = MySQL(app)
+
+@app.route('/')
+def serve_index():
+    return send_from_directory('.', 'index.html')
+
+@app.route('/<path:path>')
+def serve_static_files(path):
+    return send_from_directory('.', path)
 
 @app.route('/register', methods=['POST'])
 def register():
