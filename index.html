@@ -108,8 +108,8 @@
                     sessionStorage.setItem('currentUser', JSON.stringify(user));
                     window.location.href = "dashboard.html"; // Redirect to dashboard
                 } else {
-                    const errorText = await response.text();
-                    document.getElementById('login-error').textContent = errorText;
+                    const errorText = await response.json();
+                    document.getElementById('login-error').textContent = errorText.message || 'Login failed';
                 }
             } catch (error) {
                 document.getElementById('login-error').textContent = 'An error occurred. Please try again.';
@@ -156,8 +156,8 @@
                     document.getElementById('login-form').style.display = 'block';
                     document.getElementById('register-error').textContent = '';
                 } else {
-                    const errorText = await response.text();
-                    document.getElementById('register-error').textContent = errorText;
+                    const errorText = await response.json();
+                    document.getElementById('register-error').textContent = errorText.message || 'Registration failed';
                 }
             } catch (error) {
                 document.getElementById('register-error').textContent = 'An error occurred. Please try again.';
