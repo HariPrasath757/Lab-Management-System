@@ -18,6 +18,8 @@
                 <li id="lab-incharge-section" style="display: none;">
                     <a href="#" class="tab-link" data-tab="view-requests-tab">View Requests</a>
                     <a href="#" class="tab-link" data-tab="view-components-tab">View Components</a>
+                    <a href="#" class="tab-link" data-tab="view-pending-bookings-tab">View Pending Bookings</a>
+                    <a href="#" class="tab-link" data-tab="view-approved-bookings-tab">View Approved Bookings</a>
                 </li>
                 <li><a href="#" id="logout">Logout</a></li>
             </ul>
@@ -56,15 +58,17 @@
             <div id="slot-booking-tab" class="tab-content student-only">
                 <h3>Slot Booking</h3>
                 <form id="slot-booking-form" class="centered-form">
+                    <div>
+                        <label for="computer-id">Computer:</label>
+                        <select id="computer-id" name="computer-id" required>
+                            <!-- Options will be dynamically populated -->
+                        </select>
+                    </div>
                     <div class="date-time-group">
-                        <label for="from-date">From Date:</label>
+                        <label for="from-date">Date:</label>
                         <input type="date" id="from-date" name="from-date" required>
                         <label for="from-time">From Time:</label>
                         <input type="time" id="from-time" name="from-time" required>
-                    </div>
-                    <div class="date-time-group">
-                        <label for="to-date">To Date:</label>
-                        <input type="date" id="to-date" name="to-date" required>
                         <label for="to-time">To Time:</label>
                         <input type="time" id="to-time" name="to-time" required>
                     </div>
@@ -108,6 +112,47 @@
                     </thead>
                     <tbody>
                         <!-- Components will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="view-pending-bookings-tab" class="tab-content">
+                <h3>View Pending Bookings</h3>
+                <table id="bookings-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>From Date</th>
+                            <th>From Time</th>
+                            <th>To Date</th>
+                            <th>To Time</th>
+                            <th>Computer ID</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Bookings will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="view-approved-bookings-tab" class="tab-content">
+                <h3>View Approved Bookings</h3>
+                <table id="approved-bookings-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>From Date</th>
+                            <th>From Time</th>
+                            <th>To Date</th>
+                            <th>To Time</th>
+                            <th>Computer ID</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Approved bookings will be dynamically inserted here -->
                     </tbody>
                 </table>
             </div>

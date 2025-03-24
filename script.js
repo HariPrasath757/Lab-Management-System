@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tabContents = document.querySelectorAll('.tab-content');
     const logoutButton = document.getElementById('logout');
     const slotBookingForm = document.getElementById('slot-booking-form');
+    const computerDropdown = document.getElementById('computer-id');
     const labInchargeSection = document.getElementById('lab-incharge-section');
 
     async function fetchComponents() {
@@ -17,6 +18,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             return components.map(component => component.component_name);
         } catch (error) {
             console.error('Error fetching components:', error);
+            return [];
+        }
+    }
+
+    async function fetchComputers() {
+        try {
+            const response = await fetch('http://localhost:5000/computers');
+            const computers = await response.json();
+            return computers;
+        } catch (error) {
+            console.error('Error fetching computers:', error);
             return [];
         }
     }
@@ -46,6 +58,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.addEventListener('click', (event) => {
             if (!inputElement.parentElement.contains(event.target)) dropdownList.innerHTML = '';
+        });
+    }
+
+    async function populateComputerDropdown() {
+        const computers = await fetchComputers();
+        computerDropdown.innerHTML = '';
+        computers.forEach(computer => {
+            const option = document.createElement('option');
+            option.value = computer.id;
+            option.textContent = `Computer ${computer.computer_index}`;
+            computerDropdown.appendChild(option);
         });
     }
 
@@ -146,26 +169,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         slotBookingForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const { username } = currentUser;
+            const computerId = document.getElementById('computer-id').value;
             const fromDate = document.getElementById('from-date').value;
+            const toDate = document.getElementById('from-date').value; // Ensure toDate is populated correctly
             const fromTime = document.getElementById('from-time').value;
-            const toDate = document.getElementById('to-date').value;
             const toTime = document.getElementById('to-time').value;
 
             try {
                 const response = await fetch('http://localhost:5000/slot-booking', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, fromDate, fromTime, toDate, toTime })
+                    body: JSON.stringify({ username, computerId, fromDate, toDate, fromTime, toTime })
                 });
 
                 if (response.ok) {
-                    alert(`Slot booked from ${fromDate} ${fromTime} to ${toDate} ${toTime}`);
+                    alert(`Slot booked for computer ${computerId} from ${fromDate} ${fromTime} to ${toTime}`);
                     slotBookingForm.reset();
                 } else {
-                    alert('Failed to book slot.');
+                    const errorResponse = await response.json();
+                    alert(`Failed to book slot: ${errorResponse.message}`);
                 }
             } catch (error) {
-                alert('An error occurred. Please try again.');
+                alert('An unexpected error occurred. Please try again.');
+                console.error('Error during slot booking:', error);
             }
         });
     }
@@ -254,11 +280,81 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Function to load and display slot bookings for lab in-charge
+    async function loadBookings() {
+        try {
+            const response = await fetch('http://localhost:5000/view-bookings');
+            const bookings = await response.json();
+            const bookingsTableBody = document.getElementById('bookings-table').querySelector('tbody');
+            bookingsTableBody.innerHTML = '';
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${booking.username}</td>
+                    <td>${booking.from_date}</td>
+                    <td>${booking.from_time}</td>
+                    <td>${booking.to_date}</td>
+                    <td>${booking.to_time}</td>
+                    <td>${booking.computer_id}</td>
+                    <td>${booking.status}</td>
+                    <td>
+                        <button class="approve-btn" data-id="${booking.id}">Approve</button>
+                        <button class="decline-btn" data-id="${booking.id}">Decline</button>
+                    </td>
+                `;
+                bookingsTableBody.appendChild(row);
+            });
+
+            document.querySelectorAll('.approve-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const bookingId = button.getAttribute('data-id');
+                    try {
+                        const response = await fetch(`http://localhost:5000/approve-booking/${bookingId}`, {
+                            method: 'POST'
+                        });
+                        if (response.ok) {
+                            alert('Booking approved successfully!');
+                            loadBookings();
+                        } else {
+                            alert('Failed to approve booking.');
+                        }
+                    } catch (error) {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.decline-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const bookingId = button.getAttribute('data-id');
+                    try {
+                        const response = await fetch(`http://localhost:5000/decline-booking/${bookingId}`, {
+                            method: 'POST'
+                        });
+                        if (response.ok) {
+                            alert('Booking declined successfully!');
+                            loadBookings();
+                        } else {
+                            alert('Failed to decline booking.');
+                        }
+                    } catch (error) {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+        } catch (error) {
+            console.error('Error loading bookings:', error);
+        }
+    }
+
     // Load data if lab in-charge is logged in
     if (currentUser && currentUser.role === 'lab_incharge') {
         await loadComponentRequests();
         await loadAvailableComponents();
+        await loadBookings();
     }
 
+    // Initialize dropdowns and populate computer dropdown
     initializeDropdown(document.querySelector('input[name="component-name[]"]'));
+    await populateComputerDropdown();
 });

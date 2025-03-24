@@ -3,6 +3,7 @@ from flask_mysqldb import MySQL
 from flask_cors import CORS
 import MySQLdb.cursors
 import os
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -10,7 +11,7 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 # MySQL configurations
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = 'Hari@2006'
+app.config['MYSQL_PASSWORD'] = 'Hari@2006'  # Replace with your actual MySQL password
 app.config['MYSQL_DB'] = 'lab_management'
 
 mysql = MySQL(app)
@@ -64,7 +65,7 @@ def login():
         return jsonify({'message': 'Invalid username or password.'}), 400
     except Exception as e:
         app.logger.error(f"Error occurred during login: {e}")
-        return jsonify({'message': 'An error occurred. Please try again.'}), 500
+        return jsonify({'message': 'An error occurred during login. Please try again.'}), 500
 
 @app.route('/component-request', methods=['POST'])
 def component_request():
@@ -112,12 +113,28 @@ def get_available_components():
 def slot_booking():
     try:
         data = request.get_json()
+        required_fields = ['username', 'fromDate', 'fromTime', 'toDate', 'toTime', 'computerId']
+        for field in required_fields:
+            if field not in data:
+                app.logger.error(f"Missing field: {field}")
+                return jsonify({'message': f'Missing field: {field}'}), 400
+        
+        username = data['username']
+        from_date = data['fromDate']
+        from_time = data['fromTime']
+        to_date = data['toDate']
+        to_time = data['toTime']
+        computer_id = data['computerId']
+        
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('INSERT INTO slot_bookings (username, from_date, from_time, to_date, to_time) VALUES (%s, %s, %s, %s, %s)', 
-                       (data['username'], data['fromDate'], data['fromTime'], data['toDate'], data['toTime']))
+        cursor.execute('INSERT INTO slot_bookings (username, from_date, from_time, to_date, to_time, computer_id, status) VALUES (%s, %s, %s, %s, %s, %s, %s)', 
+                       (username, from_date, from_time, to_date, to_time, computer_id, 'pending'))
         mysql.connection.commit()
         cursor.close()
         return jsonify({'message': 'Slot booking submitted successfully!'}), 201
+    except MySQLdb.IntegrityError as e:
+        app.logger.error(f"Integrity error occurred during slot booking: {e}")
+        return jsonify({'message': 'Slot booking conflict or constraint violation.'}), 409
     except Exception as e:
         app.logger.error(f"Error occurred during slot booking: {e}")
         return jsonify({'message': 'An error occurred. Please try again.'}), 500
@@ -175,6 +192,102 @@ def decline_request(request_id):
         return jsonify({'message': 'Request declined successfully!'}), 200
     except Exception as e:
         app.logger.error(f"Error occurred during request declination: {e}")
+        return jsonify({'message': 'An error occurred. Please try again.'}), 500
+
+@app.route('/approve-booking/<int:booking_id>', methods=['POST'])
+def approve_booking(booking_id):
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('UPDATE slot_bookings SET status = %s WHERE id = %s', ('approved', booking_id))
+        mysql.connection.commit()
+        cursor.close()
+        return jsonify({'message': 'Booking approved successfully!'}), 200
+    except Exception as e:
+        app.logger.error(f"Error occurred during booking approval: {e}")
+        return jsonify({'message': 'An error occurred. Please try again.'}), 500
+
+@app.route('/decline-booking/<int:booking_id>', methods=['POST'])
+def decline_booking(booking_id):
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('UPDATE slot_bookings SET status = %s WHERE id = %s', ('declined', booking_id))
+        mysql.connection.commit()
+        cursor.close()
+        return jsonify({'message': 'Booking declined successfully!'}), 200
+    except Exception as e:
+        app.logger.error(f"Error occurred during booking declination: {e}")
+        return jsonify({'message': 'An error occurred. Please try again.'}), 500
+
+@app.route('/view-bookings', methods=['GET'])
+def view_bookings():
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM slot_bookings WHERE status = %s', ('pending',))
+        bookings = cursor.fetchall()
+        cursor.close()
+        
+        # Serialize datetime and timedelta objects to strings
+        for booking in bookings:
+            if isinstance(booking['from_date'], datetime):
+                booking['from_date'] = booking['from_date'].strftime('%Y-%m-%d')
+            if isinstance(booking['to_date'], datetime):
+                booking['to_date'] = booking['to_date'].strftime('%Y-%m-%d')
+            if isinstance(booking['from_time'], (datetime, timedelta)):
+                booking['from_time'] = str(booking['from_time'])
+            if isinstance(booking['to_time'], (datetime, timedelta)):
+                booking['to_time'] = str(booking['to_time'])
+        
+        return jsonify(bookings)
+    except Exception as e:
+        app.logger.error(f"Error occurred while fetching bookings: {e}")
+        return jsonify({'message': 'An error occurred. Please try again.'}), 500
+
+@app.route('/view-approved-bookings', methods=['GET'])
+def view_approved_bookings():
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM slot_bookings WHERE status = %s', ('approved',))
+        bookings = cursor.fetchall()
+        cursor.close()
+        
+        # Serialize datetime and timedelta objects to strings
+        for booking in bookings:
+            if isinstance(booking['from_date'], datetime):
+                booking['from_date'] = booking['from_date'].strftime('%Y-%m-%d')
+            if isinstance(booking['to_date'], datetime):
+                booking['to_date'] = booking['to_date'].strftime('%Y-%m-%d')
+            if isinstance(booking['from_time'], (datetime, timedelta)):
+                booking['from_time'] = str(booking['from_time'])
+            if isinstance(booking['to_time'], (datetime, timedelta)):
+                booking['to_time'] = str(booking['to_time'])
+        
+        return jsonify(bookings)
+    except Exception as e:
+        app.logger.error(f"Error occurred while fetching approved bookings: {e}")
+        return jsonify({'message': 'An error occurred. Please try again.'}), 500
+
+@app.route('/view-available-slots', methods=['GET'])
+def view_available_slots():
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT * FROM slot_bookings WHERE status = %s', ('available',))
+        slots = cursor.fetchall()
+        cursor.close()
+        return jsonify(slots)
+    except Exception as e:
+        app.logger.error(f"Error occurred while fetching available slots: {e}")
+        return jsonify({'message': 'An error occurred. Please try again.'}), 500
+
+@app.route('/computers', methods=['GET'])
+def get_computers():
+    try:
+        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+        cursor.execute('SELECT id, computer_index FROM computers')
+        computers = cursor.fetchall()
+        cursor.close()
+        return jsonify(computers)
+    except Exception as e:
+        app.logger.error(f"Error occurred while fetching computers: {e}")
         return jsonify({'message': 'An error occurred. Please try again.'}), 500
 
 @app.errorhandler(404)
