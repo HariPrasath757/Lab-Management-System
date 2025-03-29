@@ -347,12 +347,40 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    // Function to load and display approved slot bookings for both students and lab in-charge
+    async function loadApprovedBookings() {
+        try {
+            const response = await fetch('http://localhost:5000/view-approved-bookings');
+            const bookings = await response.json();
+            const approvedBookingsTableBody = document.getElementById('approved-bookings-table').querySelector('tbody');
+            approvedBookingsTableBody.innerHTML = '';
+            bookings.forEach(booking => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${booking.username}</td>
+                    <td>${booking.from_date}</td>
+                    <td>${booking.from_time}</td>
+                    <td>${booking.to_date}</td>
+                    <td>${booking.to_time}</td>
+                    <td>${booking.computer_id}</td>
+                    <td>${booking.status}</td>
+                `;
+                approvedBookingsTableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error loading approved bookings:', error);
+        }
+    }
+
     // Load data if lab in-charge is logged in
     if (currentUser && currentUser.role === 'lab_incharge') {
         await loadComponentRequests();
         await loadAvailableComponents();
         await loadBookings();
     }
+
+    // Load approved bookings for both students and lab in-charge
+    await loadApprovedBookings();
 
     // Initialize dropdowns and populate computer dropdown
     initializeDropdown(document.querySelector('input[name="component-name[]"]'));
